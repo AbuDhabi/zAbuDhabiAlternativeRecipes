@@ -4,7 +4,6 @@ local util = {}
 -- @param message: Optional prefix message
 -- @param data: The data to serialize and log
 function util.log_serpent(message, data)
-  local serpent = require("serpent")
   local serialized = serpent.block(data, {comment = false})
   if message then
     log(message .. "\n" .. serialized)
