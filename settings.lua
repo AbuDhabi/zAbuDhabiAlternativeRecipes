@@ -16,11 +16,11 @@ data:extend({
   -- Expects a comma-separated list of [recipe=...] tags, e.g. "[recipe=boiler],[recipe=iron-plate]".
   {
     type = "string-setting",
-    name = "zadr-recipes-to-randomize",
+    name = "zadr-recipes-to-generate",
     setting_type = "startup",
     default_value = initial_settings.recipes_to_generate,
     allow_blank = true,
-    order = "b[recipes-to-randomize]"
+    order = "b[recipes-to-generate]"
   },
 
   -- Factorio rich text specifying ingredient groups within which randomization can swap ingredients.
