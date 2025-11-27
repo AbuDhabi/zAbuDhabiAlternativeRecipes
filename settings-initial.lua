@@ -11,9 +11,16 @@ initial_settings.random_seed = 0
 initial_settings.recipes_to_generate = "[recipe=iron-gear-wheel][recipe=copper-cable][recipe=electronic-circuit][recipe=advanced-circuit][recipe=processing-unit][recipe=engine-unit][recipe=electric-engine-unit][recipe=pipe][recipe=pipe-to-ground][recipe=iron-stick][recipe=plastic-bar][recipe=solid-fuel][recipe=explosives][recipe=battery][recipe=low-density-structure][recipe=rocket-fuel]"
 
 -- Initial Factorio rich text string describing ingredient groups for randomization.
--- Provide a semicolon-separated list of groups, where each group is a concatenated list of [item=...] tags (no commas needed).
--- Example: "[item=iron-plate][item=copper-plate];[item=coal][item=solid-fuel]".
-initial_settings.ingredient_groups = ""
+-- Provide parenthesized groups containing concatenated [item=...] tags (no commas needed).
+-- Example: "([item=iron-plate][item=copper-plate])([item=coal][item=solid-fuel])".
+-- Each group below clusters ingredients with similar material, role, or shape.
+initial_settings.ingredient_groups =
+  "([item=iron-plate][item=copper-plate][item=steel-plate])" ..
+  "([item=copper-cable][item=electronic-circuit][item=advanced-circuit][item=processing-unit])" ..
+  "([item=iron-gear-wheel][item=engine-unit][item=electric-engine-unit])" ..
+  "([item=iron-stick][item=pipe][item=pipe-to-ground])" ..
+  "([item=plastic-bar][item=battery][item=explosives])" ..
+  "([item=low-density-structure][item=rocket-fuel])"
 
 return initial_settings
 
