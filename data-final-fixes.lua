@@ -7,7 +7,8 @@ local recipes_setting = settings.startup["zadr-recipes-to-generate"]
 if recipes_setting and recipes_setting.value and recipes_setting.value ~= "" then
   local rich_text = recipes_setting.value
   -- Parse Factorio rich text format: [recipe=name] tags separated by commas
-  for tag in string.gmatch(rich_text, "%[recipe=([^%]]+)%]") do
+  -- Recipe names can include letters, numbers, dashes, and underscores.
+  for tag in string.gmatch(rich_text, "%[recipe=([%w%-_]+)%]") do
     table.insert(recipes_to_generate, tag)
   end
 end
