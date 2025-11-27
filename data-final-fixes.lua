@@ -196,7 +196,8 @@ for _, recipe_name in ipairs(recipes_to_generate) do
       recipe_copy.expensive.enabled = false
     end
 
-    recipe_copy.localised_name = {"", {"recipe-name." .. recipe_name}, " (alternative)"}
+    -- TODO: This only handles items. Entities, fluids, etc., need to be handled differently.
+    recipe_copy.localised_name = { "recipe-name.zadr-alternative-recipe", {"item-name." .. recipe_name} }
     table.insert(new_recipes, recipe_copy)
 
     local source_technology = data.raw.technology[unlockers[1]]
@@ -219,7 +220,8 @@ for _, recipe_name in ipairs(recipes_to_generate) do
         end
       end
 
-      technology_copy.localised_name = {"", {"technology-name." .. source_technology.name}, " (alternative)"}
+      -- TODO: This only handles items. Entities, fluids, etc., need to be handled differently.
+      technology_copy.localised_name = {"technology-name.zadr-alternative-technology", {"item-name." .. recipe_name}}
       technology_copy.order = (source_technology.order or "z") .. "-alternative"
       -- Share recipe icons with technology when the recipe (or its primary product) defines them; otherwise keep existing.
       if recipe.icons or recipe.icon then
@@ -232,7 +234,7 @@ for _, recipe_name in ipairs(recipes_to_generate) do
       end
 
       -- Double research cost while keeping ingredient types and research time.
-      if technology_copy.unit.count then
+      if technology_copy.unit and technology_copy.unit.count > 0 then
         technology_copy.unit.count = technology_copy.unit.count * 2
       elseif technology_copy.research_trigger then
         technology_copy.research_trigger.count = technology_copy.research_trigger.count * 2
