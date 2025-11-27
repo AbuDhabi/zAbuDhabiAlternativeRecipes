@@ -110,6 +110,47 @@ local function find_product_icon_source(recipe)
   return nil
 end
 
+local function find_item_prototype(name)
+  for _, category in ipairs(icon_source_categories) do
+    local prototype = data.raw[category] and data.raw[category][name]
+    if prototype then
+      return prototype
+    end
+  end
+
+  return nil
+end
+
+local function build_localised_reference(recipe, recipe_name)
+  if recipe.localised_name then
+    return recipe.localised_name
+  end
+
+  local product = determine_primary_product(recipe)
+  if not product then
+    return {"recipe-name." .. recipe_name}
+  end
+
+  local product_name = product.name
+  local product_type = product.type or "item"
+
+  if product_type == "fluid" then
+    local fluid_proto = data.raw.fluid and data.raw.fluid[product_name]
+    if fluid_proto then
+      return fluid_proto.localised_name or {"fluid-name." .. product_name}
+    end
+
+    return {"fluid-name." .. product_name}
+  end
+
+  local item_proto = find_item_prototype(product_name)
+  if item_proto then
+    return item_proto.localised_name or {"item-name." .. product_name}
+  end
+
+  return {"recipe-name." .. recipe_name}
+end
+
 -- Load and parse recipes to generate from startup setting.
 local recipes_to_generate = {}
 local recipes_setting = settings.startup["zadr-recipes-to-generate"]
@@ -196,8 +237,8 @@ for _, recipe_name in ipairs(recipes_to_generate) do
       recipe_copy.expensive.enabled = false
     end
 
-    -- TODO: This only handles items. Entities, fluids, etc., need to be handled differently.
-    recipe_copy.localised_name = { "recipe-name.zadr-alternative-recipe", {"item-name." .. recipe_name} }
+    local base_localised_reference = build_localised_reference(recipe, recipe_name)
+    recipe_copy.localised_name = {"recipe-name.zadr-alternative-recipe", base_localised_reference}
     table.insert(new_recipes, recipe_copy)
 
     local source_technology = data.raw.technology[unlockers[1]]
@@ -220,8 +261,7 @@ for _, recipe_name in ipairs(recipes_to_generate) do
         end
       end
 
-      -- TODO: This only handles items. Entities, fluids, etc., need to be handled differently.
-      technology_copy.localised_name = {"technology-name.zadr-alternative-technology", {"item-name." .. recipe_name}}
+      technology_copy.localised_name = {"technology-name.zadr-alternative-technology", base_localised_reference}
       technology_copy.order = (source_technology.order or "z") .. "-alternative"
       -- Share recipe icons with technology when the recipe (or its primary product) defines them; otherwise keep existing.
       if recipe.icons or recipe.icon then
