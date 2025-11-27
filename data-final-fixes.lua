@@ -110,6 +110,15 @@ local function find_product_icon_source(recipe)
   return nil
 end
 
+local random_seed_setting = settings.startup["zadr-random-seed"]
+local random_seed_value = random_seed_setting and random_seed_setting.value or 0
+if random_seed_value ~= 0 then
+  math.randomseed(random_seed_value)
+else
+  -- Deterministic fallback seed.
+  math.randomseed(1)
+end
+
 -- Load and parse recipes to generate from startup setting.
 local recipes_to_generate = {}
 local recipes_setting = settings.startup["zadr-recipes-to-generate"]
@@ -147,6 +156,58 @@ if groups_setting and groups_setting.value and groups_setting.value ~= "" then
 end
 
 util.log_serpent("[zAbuDhabiAlternativeRecipes] Ingredient groups:", ingredient_groups)
+
+local ingredient_group_lookup = {}
+for _, items in pairs(ingredient_groups) do
+  if #items > 1 then
+    for _, item_name in ipairs(items) do
+      ingredient_group_lookup[item_name] = items
+    end
+  end
+end
+
+local function pick_alternative_item(item_name)
+  local group = ingredient_group_lookup[item_name]
+  if not group then
+    return item_name
+  end
+
+  local alternatives = {}
+  for _, candidate in ipairs(group) do
+    if candidate ~= item_name then
+      table.insert(alternatives, candidate)
+    end
+  end
+
+  if #alternatives == 0 then
+    return item_name
+  end
+
+  local index = math.random(#alternatives)
+  return alternatives[index]
+end
+
+local function randomize_ingredients(ingredients)
+  if not ingredients then
+    return
+  end
+
+  for _, ingredient in pairs(ingredients) do
+    local ingredient_type = ingredient.type or ingredient[3] or "item"
+    local current_name = ingredient.name or ingredient[1]
+
+    if ingredient_type == "item" and current_name then
+      local new_name = pick_alternative_item(current_name)
+      if new_name ~= current_name then
+        if ingredient.name then
+          ingredient.name = new_name
+        else
+          ingredient[1] = new_name
+        end
+      end
+    end
+  end
+end
 
 -- Build a lookup for the recipes we care about.
 local recipe_target_lookup = {}
@@ -194,6 +255,14 @@ for _, recipe_name in ipairs(recipes_to_generate) do
 
     if recipe_copy.expensive then
       recipe_copy.expensive.enabled = false
+    end
+
+    randomize_ingredients(recipe_copy.ingredients)
+    if recipe_copy.normal then
+      randomize_ingredients(recipe_copy.normal.ingredients)
+    end
+    if recipe_copy.expensive then
+      randomize_ingredients(recipe_copy.expensive.ingredients)
     end
 
     -- TODO: This only handles items. Entities, fluids, etc., need to be handled differently.
