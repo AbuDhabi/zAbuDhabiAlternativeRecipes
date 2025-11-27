@@ -232,14 +232,10 @@ for _, recipe_name in ipairs(recipes_to_generate) do
       end
 
       -- Double research cost while keeping ingredient types and research time.
-      if technology_copy.unit and technology_copy.unit.ingredients then
-        for _, ingredient in pairs(technology_copy.unit.ingredients) do
-          if ingredient[2] then
-            ingredient[2] = ingredient[2] * 2
-          elseif ingredient.amount then
-            ingredient.amount = ingredient.amount * 2
-          end
-        end
+      if technology_copy.unit.count then
+        technology_copy.unit.count = technology_copy.unit.count * 2
+      elseif technology_copy.research_trigger then
+        technology_copy.research_trigger.count = technology_copy.research_trigger.count * 2
       end
 
       table.insert(new_technologies, technology_copy)
