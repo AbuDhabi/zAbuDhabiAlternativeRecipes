@@ -13,7 +13,7 @@ data:extend({
   },
 
   -- Factorio rich text specifying recipes that will get alternative versions generated.
-  -- Expects a comma-separated list of [recipe=...] tags, e.g. "[recipe=boiler],[recipe=iron-plate]".
+  -- Expects a concatenated list of [recipe=...] tags, e.g. "[recipe=boiler][recipe=iron-plate]".
   {
     type = "string-setting",
     name = "zadr-recipes-to-generate",
@@ -24,8 +24,8 @@ data:extend({
   },
 
   -- Factorio rich text specifying ingredient groups within which randomization can swap ingredients.
-  -- Expects a semicolon-separated list of groups, where each group is a comma-separated list of [item=...] tags.
-  -- Example: "[item=iron-plate],[item=copper-plate];[item=coal],[item=solid-fuel]".
+  -- Expects a semicolon-separated list of groups, where each group is a concatenated list of [item=...] tags.
+  -- Example: "[item=iron-plate][item=copper-plate];[item=coal][item=solid-fuel]".
   {
     type = "string-setting",
     name = "zadr-ingredient-groups",
